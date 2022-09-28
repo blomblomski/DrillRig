@@ -33,18 +33,17 @@ namespace IngameScript
         float retractVelocity = -1f;
 
 
-        float rotateAmount = 10.0f;
-        float rotorBaseStartAngle = 0.0f;        
+        float rotateAmount = 12.0f;
+        float rotorBaseStartAngle = 0.0f;
+        float maxAngle = 360.0f;
 
         float maxLimitDownPiston = 1.5f;
         float HorizontalMaxMin { set; get; }
 
         bool drilling = false;
         bool drillingDown = false;
-        bool drillingDownMax = false;
-        bool horizontalDrilling = false;
         bool horizontalDrillingSet = false;
-        bool miningComplete = false;
+        bool miningComplete = false;        
 
         string rotatorOutput = "";
         string angleOutput = "";
@@ -82,9 +81,10 @@ namespace IngameScript
             GridTerminalSystem.SearchBlocksOfName("Horizontal Piston", hPistons, hPistons => hPistons is IMyPistonBase);
             GridTerminalSystem.SearchBlocksOfName("Rotor Base", rotorBase, rotorBase => rotorBase is IMyMotorStator);
 
-            PistonsDownStartPos = 2.0f; // set the start position of the vertical down pistons.
+            PistonsDownStartPos = 1.5f; // set the start position of the vertical down pistons.
             HorizontalMaxMin = 10.0f;
             maxLimitDownPiston += PistonsDownStartPos;
+            maxAngle -= rotateAmount;
 
             if (vPistons.Count() > 0)
             {
@@ -180,6 +180,16 @@ namespace IngameScript
                 {
                     mine = mining.horizontal;
                 }
+
+                if(stator.Angle > maxAngle)
+                {
+                    mine = mining.down;                    
+                    if(maxLimitDownPiston >= 10)
+                    {
+                        op = operations.stop;
+                    }
+                    maxLimitDownPiston = Math.Min(maxLimitDownPiston += 1.0f, 10.0f);
+                }
             }
 
         }
@@ -211,8 +221,7 @@ namespace IngameScript
                 {
                     if(HorizontalMaxMin == pistonBase.CurrentPosition)
                     {
-                        mine = mining.rotate;
-                        maxLimitDownPiston = Math.Min(maxLimitDownPiston += 1.0f, 10.0f);
+                        mine = mining.rotate;                        
                         horizontalDrillingSet = !horizontalDrillingSet;
                         if(HorizontalMaxMin <= 5.0f)
                         {
@@ -253,11 +262,6 @@ namespace IngameScript
                 {
                     drillingDown = true;
                     pistonBase.Velocity = extendVelocity;
-                }
-
-                if (pistonBase.HighestPosition == pistonBase.CurrentPosition && drillingDown)
-                {
-                    drillingDownMax = true;
                 }
             } // end of foreach
         }
