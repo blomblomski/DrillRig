@@ -22,7 +22,6 @@ namespace IngameScript
 {
     partial class Program : MyGridProgram
     {
-
         List<IMyTerminalBlock> drills = new List<IMyTerminalBlock>();
         List<IMyTerminalBlock> vPistons = new List<IMyTerminalBlock>();
         List<IMyTerminalBlock> hPistons = new List<IMyTerminalBlock>();
@@ -179,8 +178,7 @@ namespace IngameScript
                 if (stator.Angle >= stator.UpperLimitRad)
                 {
                     mine = mining.horizontal;
-                }
-
+                }                
                 if(stator.Angle > maxAngle)
                 {
                     mine = mining.down;                    

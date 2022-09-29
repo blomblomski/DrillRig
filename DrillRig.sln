@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.32002.261
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrillRig", "DrillRig\DrillRig.csproj", "{A7797997-E9F7-48F4-9F4D-D9F92AEEA384}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrillRig2", "DrillRig2\DrillRig2.csproj", "{3E6DBB3F-3F82-42DD-BC53-4A483196D180}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -12,6 +14,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A7797997-E9F7-48F4-9F4D-D9F92AEEA384}.Debug|x64.ActiveCfg = Debug|x64
 		{A7797997-E9F7-48F4-9F4D-D9F92AEEA384}.Debug|x64.Build.0 = Debug|x64
+		{3E6DBB3F-3F82-42DD-BC53-4A483196D180}.Debug|x64.ActiveCfg = Debug|x64
+		{3E6DBB3F-3F82-42DD-BC53-4A483196D180}.Debug|x64.Build.0 = Debug|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
