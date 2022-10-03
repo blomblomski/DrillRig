@@ -22,7 +22,7 @@ namespace IngameScript
 {
     partial class Program : MyGridProgram
     {
-        List<IMyTerminalBlock> drills = new List<IMyTerminalBlock>();
+        readonly List<IMyTerminalBlock> drills = new List<IMyTerminalBlock>();
         List<IMyTerminalBlock> vPistons = new List<IMyTerminalBlock>();
         List<IMyTerminalBlock> hPistons = new List<IMyTerminalBlock>();
         List<IMyTerminalBlock> rotorBase = new List<IMyTerminalBlock>();

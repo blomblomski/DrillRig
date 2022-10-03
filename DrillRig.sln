@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrillRig", "DrillRig\DrillR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrillRig2", "DrillRig2\DrillRig2.csproj", "{3E6DBB3F-3F82-42DD-BC53-4A483196D180}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RotationTest", "RotationTest\RotationTest.csproj", "{2887BF99-9D45-45DA-BCE2-9BCDD7B91BC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrillRigThree", "DrillRigThree\DrillRigThree.csproj", "{6C7BC321-DDB9-40B3-8881-9F0C1932BCB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RotatingDrillRig", "RotatingDrillRig\RotatingDrillRig.csproj", "{AEEEADF4-DDE6-4D21-B6F1-6D97EA6DC805}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -16,6 +22,12 @@ Global
 		{A7797997-E9F7-48F4-9F4D-D9F92AEEA384}.Debug|x64.Build.0 = Debug|x64
 		{3E6DBB3F-3F82-42DD-BC53-4A483196D180}.Debug|x64.ActiveCfg = Debug|x64
 		{3E6DBB3F-3F82-42DD-BC53-4A483196D180}.Debug|x64.Build.0 = Debug|x64
+		{2887BF99-9D45-45DA-BCE2-9BCDD7B91BC9}.Debug|x64.ActiveCfg = Debug|x64
+		{2887BF99-9D45-45DA-BCE2-9BCDD7B91BC9}.Debug|x64.Build.0 = Debug|x64
+		{6C7BC321-DDB9-40B3-8881-9F0C1932BCB1}.Debug|x64.ActiveCfg = Debug|x64
+		{6C7BC321-DDB9-40B3-8881-9F0C1932BCB1}.Debug|x64.Build.0 = Debug|x64
+		{AEEEADF4-DDE6-4D21-B6F1-6D97EA6DC805}.Debug|x64.ActiveCfg = Debug|x64
+		{AEEEADF4-DDE6-4D21-B6F1-6D97EA6DC805}.Debug|x64.Build.0 = Debug|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -29,13 +29,13 @@ namespace IngameScript
 
         private enum RigStates
         {
-            reset,
-            start,
-            stop,
-            setup
+            Reset,
+            Start,
+            Stop,
+            Setup
         }
 
-        private RigStates _rigStates = RigStates.stop;
+        private RigStates _rigStates = RigStates.Stop;
 
         private enum MiningStates
         {
@@ -57,6 +57,8 @@ namespace IngameScript
         float StartingAngle { set; get; } // the position that the rig will start from.
         float RotationAmountInDegrees { set; get; } // how much the rig will rotate per rotation.
 
+        private float RotationSpeed { set; get; }
+
         // pistions
         private float
             ExtendPistonVelocity { set; get; } // How fast the vertical booms extend.  More booms reduce the speed
@@ -71,6 +73,8 @@ namespace IngameScript
         private bool RigSetupComplete { set; get; }
 
         private bool IsMaxDepth { set; get; }
+        
+        private bool UpdateDepthDrill { set; get; }
 
         private string test = "what";
 
@@ -81,15 +85,17 @@ namespace IngameScript
         {
             test = "reset";
             StartingAngle = 0.0f;
-            RotationAmountInDegrees = 15.0f;
+            RotationAmountInDegrees = 90.0f;
             NumberOfRotations = (int)(360 / RotationAmountInDegrees); // 360 / 15 = 24
 
-            ExtendPistonVelocity = 0.3f;
-            HorizontalPistonVelocity = 0.3f;
+            ExtendPistonVelocity = 1.5f;
+            HorizontalPistonVelocity = 1.5f;
             RetractPistonVelocity = 2.0f;
             MaxLimitDown = 2.0f; // At each drop extend the pistons by this value
             PistionDownStartPosition = 0.0f; // How extended you need the pistons to be at the start
-
+            UpdateDepthDrill = true;
+            RotationSpeed = 0.5f;
+            
             if (PistionDownStartPosition > MaxLimitDown)
             {
                 MaxLimitDown += PistionDownStartPosition;
@@ -98,7 +104,7 @@ namespace IngameScript
             IsMaxDepth = false;
             DrillsEnabled = false;
 
-            _rigStates = RigStates.stop;
+            _rigStates = RigStates.Stop;
         }
 
         public Program()
@@ -116,40 +122,41 @@ namespace IngameScript
 
         public void Main(string argument, UpdateType updateSource)
         {
-            Echo("Current Extenstion limit: " + MaxLimitDown + " " +test);
+            Echo("Current Extenstion limit: " + PistionDownStartPosition + " " +test);
             Echo("Current Hor velocity: " + HorizontalPistonVelocity);
+            Echo("Rotations Left: " + NumberOfRotations);
             switch (_rigStates)
             {
-                case RigStates.setup:
+                case RigStates.Setup:
                     RigSetupComplete = false;
                     SetupTheRig();
                     Echo("Setting up the Rig.");
                     if (RigSetupComplete) // auto start the rig
                     {
-                        _rigStates = RigStates.start;
+                        _rigStates = RigStates.Start;
                     }
 
                     break;
-                case RigStates.reset:
+                case RigStates.Reset:
                     Echo("Resetting the Rig.");
                     Reset();
                     break;
-                case RigStates.start:
+                case RigStates.Start:
                     Echo("The Rig is running.");
                     DrillsEnabled = true;
                     DrillSettings(DrillsEnabled);
                     Start();
                     break;
-                case RigStates.stop:
+                case RigStates.Stop:
                     Echo("The Rig is stopped.");
                     RigStop();
                     switch (argument)
                     {
                         case "setup":
-                            _rigStates = RigStates.setup;
+                            _rigStates = RigStates.Setup;
                             break;
                         case "reset":
-                            _rigStates = RigStates.reset;
+                            _rigStates = RigStates.Reset;
                             break;
                         default:
                             Echo("Please enter setup or stop to proceed");
@@ -157,7 +164,7 @@ namespace IngameScript
                     }
                     break;
                 default:
-                    _rigStates = RigStates.stop;
+                    _rigStates = RigStates.Stop;
                     break;
             }
         }
@@ -188,9 +195,16 @@ namespace IngameScript
         {
             foreach (var stator in _motorRotor.Cast<IMyMotorStator>())
             {
-                stator.TargetVelocityRPM = ExtendPistonVelocity;
+                stator.TargetVelocityRPM = RotationSpeed;
 
-                if (stator.Angle >= stator.UpperLimitRad)
+                if (stator.Angle >= stator.UpperLimitRad && RotationSpeed > 0.1f)
+                {
+                    NumberOfRotations -= 1;
+                    _miningStates = MiningStates.horizontal;
+                    HorizontalPistonVelocity = HorizontalPistonVelocity * -1;
+                }
+
+                if (stator.Angle <= stator.LowerLimitDeg && RotationSpeed < 0.1f)
                 {
                     NumberOfRotations -= 1;
                     _miningStates = MiningStates.horizontal;
@@ -215,15 +229,40 @@ namespace IngameScript
                 {
                     if (NumberOfRotations > 0)
                     {
-                        stator.UpperLimitDeg += RotationAmountInDegrees;
+                        UpdateDepthDrill = true;
+                        if (RotationSpeed > 0.1f)
+                        {
+                            stator.UpperLimitDeg += RotationAmountInDegrees;
+                        }
+                        else if (RotationSpeed < -0.1f)
+                        {
+                            stator.LowerLimitDeg -= RotationAmountInDegrees;
+                        }
                     }
                     else
                     {
                         _miningStates = MiningStates.vertical;
+                        if (UpdateDepthDrill)
+                        {
+                            UpdateDepthDrill = false;
+                            MaxLimitDown += 2.0f;
+                            RotationSpeed = RotationSpeed * -1;
+                            if (stator.TargetVelocityRPM > 0.0f)
+                            { 
+                                stator.LowerLimitDeg = stator.UpperLimitDeg - RotationAmountInDegrees;
+                            }
+
+                            if (stator.TargetVelocityRPM < 0.0f)
+                            {
+                                stator.UpperLimitDeg = stator.LowerLimitDeg + RotationAmountInDegrees;
+                            }
+                            
+                        }
+                        
                         NumberOfRotations = (int)(StartingAngle / RotationAmountInDegrees);
                         if (IsMaxDepth)
                         {
-                            _rigStates = RigStates.stop;
+                            _rigStates = RigStates.Stop;
                         }
                     }
                 }
@@ -242,6 +281,7 @@ namespace IngameScript
                 else
                 {
                     piston.Velocity = 0.0f;
+                    HorizontalPistonVelocity = HorizontalPistonVelocity * -1;
                     _miningStates = MiningStates.horizontal;
                 }
 
@@ -312,13 +352,15 @@ namespace IngameScript
             foreach (var motorStator in _motorRotor.Cast<IMyMotorStator>())
             {
                 motorStator.UpperLimitDeg = StartingAngle;
+                motorStator.LowerLimitDeg = StartingAngle;
+                
                 if (motorStator.Angle > motorStator.UpperLimitRad)
                 {
-                    motorStator.TargetVelocityRPM = -0.5f;
+                    motorStator.TargetVelocityRPM = RotationSpeed;
                 }
                 else if (motorStator.Angle < motorStator.UpperLimitRad)
                 {
-                    motorStator.TargetVelocityRPM = 0.5f;
+                    motorStator.TargetVelocityRPM = RotationSpeed * -1;
                 }
                 else
                 {
